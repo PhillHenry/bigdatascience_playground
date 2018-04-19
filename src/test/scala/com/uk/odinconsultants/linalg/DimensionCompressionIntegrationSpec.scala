@@ -18,27 +18,34 @@ class DimensionCompressionIntegrationSpec extends WordSpec with Matchers {
   val vectors: Seq[(Int, SparseVector)] = (1 to nVectors).map { i =>
     val n       = 3
     val rnd     = new Random()
-    val indices = (1 to n).map { _ => rnd.nextInt(vecSize) }.toSet.toArray.sorted
+    val indices = (1 to n).map { _ => rnd.nextInt(vecSize) }.toSet[Int].toArray.sorted
     val values  = (1 to indices.length).map { _ => rnd.nextDouble() }.toArray
     val vec: SparseVector = new SparseVector(vecSize, indices, values)
     (i, vec)
   }
 
-  val colName       = "VECTORS"
-  val df: DataFrame = vectors.toDF("ID", colName)
-  val allIndices    = vectors.flatMap(_._2.indices).toSet
+  val colName               = "VECTORS"
+  val COL_INDEX             = 1
+  val df: DataFrame         = vectors.toDF("ID", colName)
+  val allIndices: Set[Int]  = vectors.flatMap(_._2.indices).toSet
 
   "non empty columns" should {
     "be recorded" in {
-      indicesIn(df, 1) shouldBe allIndices
+      indicesIn(df, COL_INDEX) shouldBe allIndices
     }
   }
 
   "empty columns" should {
-    "be removed" ignore {
+    "be removed" in {
       df.show()
 
-      discardEmptyColumns(df, 1)
+      val actual  = discardEmptyColumns(df, COL_INDEX)
+      val inMem   = actual.collect()
+      inMem.foreach { r =>
+        val v = extractVec(COL_INDEX)(r)
+        v.size shouldBe allIndices.size
+        v.indices.foreach { i => i shouldBe < (allIndices.size) }
+      }
     }
   }
 

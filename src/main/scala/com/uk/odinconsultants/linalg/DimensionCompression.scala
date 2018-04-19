@@ -1,9 +1,24 @@
 package com.uk.odinconsultants.linalg
 
 import org.apache.spark.ml.linalg.{SparseVector, Vector => SVector}
-import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.spark.sql.expressions.UserDefinedFunction
+import org.apache.spark.sql.functions.{udf, col}
+import org.apache.spark.sql.{DataFrame, Row}
 
 object DimensionCompression {
+
+  def toIndices(i: Int)(r: Row): Array[Int] = r.getAs[SparseVector](0).indices
+
+  def compacting(replacements: Map[Int, Int])(v: SparseVector): SparseVector = {
+    val indexVals  = v.indices.zip(v.values)
+    val newIndices = indexVals.map { case (i, x) => (replacements(i), x) }.sortBy(_._1)
+    new SparseVector(replacements.size, newIndices.map(_._1), newIndices.map(_._2))
+  }
+
+  def compactingUdf(replacements: Map[Int, Int]): UserDefinedFunction = {
+    val compactingFn = compacting(replacements) _
+    udf(compactingFn)
+  }
 
   def nonZeroIndicesOf(x: SparseVector): Set[Int] = x.indices.toSet
 
@@ -25,9 +40,11 @@ object DimensionCompression {
   }
 
   def discardEmptyColumns(df: DataFrame, colIndx: Int): DataFrame = {
-    val fn: (Row, Row) => Row = ids(colIndx)
-    val reduced = df.reduce(fn)
-    ???
+    val allIndices    = indicesIn(df, colIndx)
+    val old2New       = allIndices.zipWithIndex.toMap
+    val colName       = df.columns.apply(colIndx)
+    val fn            = compactingUdf(old2New)
+    df.withColumn(colName, fn(col(colName)))
   }
 
 }

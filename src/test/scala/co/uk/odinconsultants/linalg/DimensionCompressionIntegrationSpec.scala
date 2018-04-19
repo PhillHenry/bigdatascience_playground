@@ -1,9 +1,9 @@
-package com.uk.odinconsultants.linalg
+package co.uk.odinconsultants.linalg
 
 import org.apache.spark.ml.linalg.{SparseVector, Vector => SVector}
 import org.apache.spark.sql.DataFrame
 import org.scalatest.{Matchers, WordSpec}
-import com.uk.odinconsultants.spark.SparkForTesting._
+import co.uk.odinconsultants.spark.SparkForTesting._
 import scala.collection.immutable.Seq
 
 import scala.util.Random
@@ -38,7 +38,7 @@ class DimensionCompressionIntegrationSpec extends WordSpec with Matchers {
   "empty columns" should {
     "be removed" in {
       withClue("Not much of a test if this is not true") {
-        allIndices.size should be < (vecSize)
+        allIndices.size should be < vecSize
       }
 
       val actual  = discardEmptyColumns(df, COL_INDEX)

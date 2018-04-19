@@ -1,4 +1,4 @@
-package com.uk.odinconsultants.linalg
+package co.uk.odinconsultants.linalg
 
 import org.apache.spark.ml.linalg.{SparseVector, Vector => SVector}
 import org.apache.spark.sql.expressions.UserDefinedFunction

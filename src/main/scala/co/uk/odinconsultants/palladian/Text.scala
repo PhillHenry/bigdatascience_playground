@@ -1,4 +1,4 @@
-package com.uk.odinconsultants.palladian
+package co.uk.odinconsultants.palladian
 
 object Text {
 

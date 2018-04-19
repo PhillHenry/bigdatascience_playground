@@ -1,4 +1,4 @@
-package com.uk.odinconsultants.palladian
+package co.uk.odinconsultants.palladian
 
 import org.scalatest.{Matchers, WordSpec}
 
@@ -20,7 +20,7 @@ class TextSpec extends WordSpec with Matchers {
   "Text" should {
     "be alpha numeric only" in {
       val actual = "12phill"
-      alphaNumeric(s"!%^${actual}*()") shouldBe actual
+      alphaNumeric(s"!%^$actual*()") shouldBe actual
     }
     "turned into n-grams" in {
       val text    = "0123456789"

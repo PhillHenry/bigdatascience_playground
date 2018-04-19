@@ -1,4 +1,4 @@
-package com.uk.odinconsultants.spark
+package co.uk.odinconsultants.spark
 
 import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}

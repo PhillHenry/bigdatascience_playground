@@ -24,14 +24,6 @@ object DimensionCompression {
 
   def extractVec(colIndx: Int)(r: Row): SparseVector = r.getAs[SparseVector](colIndx)
 
-  def ids(colIndx: Int)(r1: Row, r2: Row): Row = {
-    println(s"Rows:\n$r1\n$r2\nRow 1 length = ${r1.length}")
-    val extractor = extractVec(colIndx) _
-    val vec1    = extractor(r1)
-    val vec2    = extractor(r2)
-    Row(vec1.indices.toSet ++ vec2.indices.toSet)
-  }
-
   def indicesIn(df: DataFrame, colIndx: Int): Set[Int] = {
     import df.sparkSession.implicits._
     val extractor = extractVec(colIndx) _

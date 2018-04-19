@@ -37,7 +37,9 @@ class DimensionCompressionIntegrationSpec extends WordSpec with Matchers {
 
   "empty columns" should {
     "be removed" in {
-      df.show()
+      withClue("Not much of a test if this is not true") {
+        allIndices.size should be < (vecSize)
+      }
 
       val actual  = discardEmptyColumns(df, COL_INDEX)
       val inMem   = actual.collect()
